@@ -9,5 +9,6 @@
 #import <UIKit/UIKit.h>
 
 @interface CZMutContentButton : UIButton
-
+/** <#注释#> */
+@property (nonatomic, assign) NSInteger flag;
 @end

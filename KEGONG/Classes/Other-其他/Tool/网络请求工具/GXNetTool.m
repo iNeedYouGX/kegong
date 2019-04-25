@@ -24,9 +24,9 @@
     NSString *deviceUUID = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
     NSDictionary *paramHeader = @{
                                   @"timestamp" : timestamp,
-                                  @"sign" : MD5string,
-                                  @"token" : JPTOKEN ? JPTOKEN : @"",
-                                  @"uuid" : deviceUUID
+//                                  @"sign" : MD5string,
+//                                  @"token" : JPTOKEN ? JPTOKEN : @"",
+//                                  @"uuid" : deviceUUID
                                   };
     return paramHeader;
 }
@@ -46,6 +46,34 @@
     for (NSString *key in headers.allKeys) {
         [manager.requestSerializer setValue:headers[key] forHTTPHeaderField:key];
     }
+    if (JPTOKEN != nil) {
+        [manager.requestSerializer setValue:JPTOKEN forHTTPHeaderField:@"Cookie"];
+    }
+
+    //cookies获取
+//    NSHTTPCookieStorage *cookieJar = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+//    NSArray *cookieArr = [cookieJar cookies];
+//    for(NSHTTPCookie *cookie in cookieArr) {
+////         获取cooker
+//        NSMutableDictionary *properties = [[cookie properties] mutableCopy];
+//        properties[NSHTTPCookieValue] = @"hahaha";
+//        NSLog(@"---------%@", properties[NSHTTPCookieValue]);
+//
+//        NSLog(@"cookie －> %@", cookie);
+//        NSLog(@"cookie.name －> %@", cookie.name);
+//        NSLog(@"cookie.value －> %@", cookie.value);
+//                if ([cookie.name isEqualToString:@"access_token"]) {
+//                    //存储cookies
+//
+//
+//                }
+////        存储之后删除cookies
+//        [cookieJar deleteCookie:cookie];
+////         修改cookies
+//         [cookieJar setCookie:[NSHTTPCookie cookieWithProperties:properties]];
+//    }
+
+
     
     //(3)设置返回数据的类型
     switch (response) {
@@ -72,13 +100,30 @@
     NSMutableDictionary *param = [NSMutableDictionary dictionaryWithDictionary:body];
     param[@"client"] = @(2);
     [manager GET:url parameters:param progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+
         NSDictionary *result = responseObject;
         success([result deleteAllNullValue]);
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         failure ? : failure(error);
-        NSLog(@"%@", error);
-        [CZProgressHUD showProgressHUDWithText:@"网络出错"];
-        [CZProgressHUD hideAfterDelay:2];
+        [CZProgressHUD hideAfterDelay:0];
+        NSInteger codeStatus = [error.userInfo[AFNetworkingOperationFailingURLResponseErrorKey] statusCode];
+        NSLog(@"statusCode--%ld", codeStatus);
+        if (codeStatus == 401) {
+            CZLoginController *vc = [CZLoginController shareLoginController];
+            UITabBarController *tabbar = (UITabBarController *)[[UIApplication sharedApplication].keyWindow rootViewController];
+            UINavigationController *nav = tabbar.selectedViewController;
+            UIViewController *currentVc = nav.topViewController;
+            [currentVc.navigationController popViewControllerAnimated:YES];
+            [nav presentViewController:vc animated:YES completion:^{
+                [CZProgressHUD showProgressHUDWithText:@"请重新登录"];
+                [CZProgressHUD hideAfterDelay:2];
+            }];
+
+        }
+        NSData *errorData = error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
+        NSDictionary *serializedData = [NSJSONSerialization JSONObjectWithData: errorData options:kNilOptions error:nil];
+        NSLog(@"error--%@",serializedData);
+
     }];
     return manager;
 }
@@ -132,11 +177,30 @@
         default:
             break;
     }
-    
+
+    //cookies获取
+//    NSHTTPCookieStorage *cookieJar = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+//    NSArray *cookieArr = [cookieJar cookies];
+//    for(NSHTTPCookie *cookie in cookieArr) {
+//        NSLog(@"cookie －> %@", cookie);
+//        NSLog(@"cookie.name －> %@", cookie.name);
+//        NSLog(@"cookie.value －> %@", cookie.value);
+        //        if ([cookie.name isEqualToString:@"access_token"]) {
+        //            //存储cookies
+        //
+        //
+        //        }
+        //存储之后删除cookies
+        //            [cookieJar deleteCookie:cookie];
+//    }
+
     //(2)请求头的设置
     headers = [self setupHeader];
     for (NSString *key in headers.allKeys) {
         [manager.requestSerializer setValue:headers[key] forHTTPHeaderField:key];
+    }
+    if (JPTOKEN != nil) {
+        [manager.requestSerializer setValue:JPTOKEN forHTTPHeaderField:@"Cookie"];
     }
     
     //(3)设置返回数据的类型
@@ -163,10 +227,11 @@
     //加载菊花
 //    [CZProgressHUD showProgressHUDWithText:nil];
     //(6)发送请求
+   
     
     NSMutableDictionary *param = [NSMutableDictionary dictionaryWithDictionary:body];
     [manager POST:url parameters:param progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-       
+
         // 除去NSNUll
         NSDictionary *result = responseObject;
         success([result deleteAllNullValue]);
@@ -174,9 +239,24 @@
 //        [CZProgressHUD hideAfterDelay:0];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         !failure ? : failure(error);
-        NSLog(@"%@", error);
-        [CZProgressHUD showProgressHUDWithText:@"网络出错"];
         [CZProgressHUD hideAfterDelay:2];
+        NSInteger codeStatus = [error.userInfo[AFNetworkingOperationFailingURLResponseErrorKey] statusCode];
+        NSLog(@"statusCode--%ld", codeStatus);
+        if (codeStatus == 401) {
+            CZLoginController *vc = [CZLoginController shareLoginController];
+            UITabBarController *tabbar = (UITabBarController *)[[UIApplication sharedApplication].keyWindow rootViewController];
+            UINavigationController *nav = tabbar.selectedViewController;
+            UIViewController *currentVc = nav.topViewController;
+            [currentVc.navigationController popViewControllerAnimated:YES];
+            [nav presentViewController:vc animated:YES completion:^{
+                [CZProgressHUD showProgressHUDWithText:@"请重新登录"];
+                [CZProgressHUD hideAfterDelay:2];
+            }];
+
+        }
+        NSData *errorData = error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
+        NSDictionary *serializedData = [NSJSONSerialization JSONObjectWithData: errorData options:kNilOptions error:nil];
+        NSLog(@"error--%@",serializedData);
     }];
 }
 

@@ -7,18 +7,18 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "CZHotSubTilteModel.h"
 NS_ASSUME_NONNULL_BEGIN
 
 @interface CZHotTitleModel : NSObject
-/** 标题 */
-@property (nonatomic, strong) NSString *categoryName;
-/** 分类的ID */
-@property (nonatomic, strong) NSString *categoryId;
-/** 副标题 */
-@property (nonatomic, strong) NSArray <CZHotSubTilteModel *> *children;
-/** 大图片 */
-@property (nonatomic, strong) NSArray *adList;
+/** id */
+@property (nonatomic, strong) NSString *gtid;
+/** 名字 */
+@property (nonatomic, strong) NSString *gtname;
+/** 图片 */
+@property (nonatomic, strong) NSString *thumbnail;
+
+/** 辅助 */
+@property (nonatomic, assign) BOOL isSelected;
 @end
 
 NS_ASSUME_NONNULL_END

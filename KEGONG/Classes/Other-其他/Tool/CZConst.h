@@ -7,14 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-UIKIT_EXTERN NSString * const OpenBoxInspectWebHeightKey;
+/** 图片URL的全局路径 */
+UIKIT_EXTERN NSString *KGIMAGEURL;
 UIKIT_EXTERN NSString * const loginChangeUserInfo;
-UIKIT_EXTERN NSString * const systemMessageDetailControllerMessageRead;
-UIKIT_EXTERN NSString * const attentionCellNotifKey;
-UIKIT_EXTERN NSString * const requiredVersionCode;
-UIKIT_EXTERN BOOL appVersion;
-/** 收藏通知的KEY */
-UIKIT_EXTERN NSString * const collectNotification;
 
 typedef NS_ENUM(NSInteger, CZJIPINModuleType){
     CZJIPINModuleHotSale,

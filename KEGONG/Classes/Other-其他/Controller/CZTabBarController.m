@@ -9,7 +9,8 @@
 #import "CZTabBarController.h"
 #import "CZNavigationController.h"
 #import "CZHotSaleController.h" // 商品
-
+#import "KGShoppingTrolleyController.h" // 购物车
+#import "CZMeControllerViewController.h" // 我的
 
 
 @interface CZTabBarController ()<UITabBarControllerDelegate>
@@ -42,10 +43,10 @@
     self.delegate = self;
     [self setupWithController:[[UIViewController alloc] init] title:@"接单" image:@"tab-form-nor" selectedImage:@"tab-form-sel"];
     [self setupWithController:[[CZHotSaleController alloc] init] title:@"商品" image:@"tab-good-nor" selectedImage:@"tab-good-sel"];
-    [self setupWithController:[[UIViewController alloc] init] title:@"购物车" image:@"tab-cart-nor" selectedImage:@"tab-cart-sel"];
-    [self setupWithController:[[UIViewController alloc] init] title:@"我的" image:@"tab-people-nor" selectedImage:@"tab-people-sel"];
+    [self setupWithController:[[KGShoppingTrolleyController alloc] init] title:@"购物车" image:@"tab-cart-nor" selectedImage:@"tab-cart-sel"];
+    [self setupWithController:[[CZMeControllerViewController alloc] init] title:@"我的" image:@"tab-people-nor" selectedImage:@"tab-people-sel"];
     
-    self.selectedIndex = 0;
+    self.selectedIndex = 2;
     self.tabBar.clipsToBounds = YES;
 }
 

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="CZUpdataView">
+            <rect key="frame" x="0.0" y="0.0" width="303" height="389"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JnO-7H-Ygh">
+                    <rect key="frame" x="17" y="84.5" width="269" height="220"/>
+                    <subviews>
+                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WCm-YF-oxB">
+                            <rect key="frame" x="239" y="8" width="22" height="22"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <state key="normal" backgroundImage="close"/>
+                            <connections>
+                                <action selector="deleteView" destination="iN0-l3-epB" eventType="touchUpInside" id="Y5g-M3-b8B"/>
+                            </connections>
+                        </button>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="sMS-HW-g4D">
+                            <rect key="frame" x="74.5" y="18" width="120" height="120"/>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="120" id="NBy-Ym-RtC"/>
+                                <constraint firstAttribute="width" constant="120" id="jUj-hC-ZmN"/>
+                            </constraints>
+                        </imageView>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="扫描二维码，查看订单并付款" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8Gs-N5-VhH">
+                            <rect key="frame" x="48.5" y="143" width="172.5" height="16"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                            <color key="textColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ASo-GL-f1S">
+                            <rect key="frame" x="77.5" y="171" width="114" height="34"/>
+                            <color key="backgroundColor" red="0.29017603397369385" green="0.56432265043258667" blue="0.88652592897415161" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="114" id="3aS-dH-Mdx"/>
+                                <constraint firstAttribute="height" constant="34" id="FUY-8Q-pyC"/>
+                            </constraints>
+                            <state key="normal" title="下载付款码">
+                                <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </state>
+                            <userDefinedRuntimeAttributes>
+                                <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                    <integer key="value" value="17"/>
+                                </userDefinedRuntimeAttribute>
+                                <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                            </userDefinedRuntimeAttributes>
+                            <connections>
+                                <action selector="gotoUpdata" destination="iN0-l3-epB" eventType="touchUpInside" id="dEs-lD-NTS"/>
+                            </connections>
+                        </button>
+                    </subviews>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstItem="ASo-GL-f1S" firstAttribute="centerX" secondItem="JnO-7H-Ygh" secondAttribute="centerX" id="1gI-YS-HDm"/>
+                        <constraint firstItem="sMS-HW-g4D" firstAttribute="top" secondItem="JnO-7H-Ygh" secondAttribute="top" constant="18" id="2kU-5N-vpi"/>
+                        <constraint firstItem="8Gs-N5-VhH" firstAttribute="centerX" secondItem="JnO-7H-Ygh" secondAttribute="centerX" id="863-4Y-HNc"/>
+                        <constraint firstItem="sMS-HW-g4D" firstAttribute="centerX" secondItem="JnO-7H-Ygh" secondAttribute="centerX" id="FVa-pG-EU1"/>
+                        <constraint firstItem="ASo-GL-f1S" firstAttribute="top" secondItem="8Gs-N5-VhH" secondAttribute="bottom" constant="12" id="Jvw-Ek-fDU"/>
+                        <constraint firstAttribute="height" constant="220" id="M3J-Nj-Cm0"/>
+                        <constraint firstItem="8Gs-N5-VhH" firstAttribute="top" secondItem="sMS-HW-g4D" secondAttribute="bottom" constant="5" id="giJ-VC-MNC"/>
+                        <constraint firstAttribute="width" constant="269" id="tGv-sZ-TSq"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstItem="JnO-7H-Ygh" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="WSd-0C-RGU"/>
+                <constraint firstItem="JnO-7H-Ygh" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="gPg-7c-Eur"/>
+            </constraints>
+            <nil key="simulatedTopBarMetrics"/>
+            <nil key="simulatedBottomBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="QRImageView" destination="sMS-HW-g4D" id="MbF-Of-aoq"/>
+                <outlet property="delectBtn" destination="WCm-YF-oxB" id="BYx-mJ-3pH"/>
+            </connections>
+            <point key="canvasLocation" x="-992.79999999999995" y="-12.143928035982009"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="close" width="22" height="22"/>
+        <image name="logo" width="60" height="60"/>
+    </resources>
+</document>

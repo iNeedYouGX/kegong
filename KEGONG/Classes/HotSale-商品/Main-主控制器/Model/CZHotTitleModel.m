@@ -7,7 +7,6 @@
 //
 
 #import "CZHotTitleModel.h"
-#import "MJExtension.h"
 
 @implementation CZHotTitleModel
 
