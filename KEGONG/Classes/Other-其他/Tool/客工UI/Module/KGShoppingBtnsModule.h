@@ -10,8 +10,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface KGShoppingBtnsModule : UIView
+typedef void(^shoppingTrolleyBlock)(void);
 
+@interface KGShoppingBtnsModule : UIView
+/** 实际支付 */
+@property (nonatomic, strong) NSString *price;
+/** 生成二维码 */
+@property (nonatomic, copy) shoppingTrolleyBlock QRBlock;
+/** 前往支付 */
+@property (nonatomic, copy) shoppingTrolleyBlock buyBlock;
 @end
 
 NS_ASSUME_NONNULL_END

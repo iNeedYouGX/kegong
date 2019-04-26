@@ -49,6 +49,12 @@
 @property (nonatomic, strong) NSDictionary *addressDic;
 /** 购物车信息 */
 @property (nonatomic, strong) NSMutableArray *goodsParam;
+/** 记录订单 */
+@property (nonatomic, strong) NSString *orderID;
+/** 定时器 */
+@property (nonatomic, strong) NSTimer *timer;
+/** 弹出的二维码 */
+@property (nonatomic, strong) CZUpdataView *backView;
 
 @end
 
@@ -314,6 +320,12 @@ static CGFloat const likeAndShareHeight = 49;
     [self.goodsParam removeAllObjects]; // 记录选中的数组
     [self.tableView reloadData];
 }
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+    [self.timer invalidate];
+}
 #pragma mark -- end
 
 #pragma mark - 代理
@@ -437,37 +449,77 @@ static CGFloat const likeAndShareHeight = 49;
         return;
     }
     NSMutableDictionary *param = [NSMutableDictionary dictionary];
+    param[@"goodsInfo"] = self.goodsParam; // 商品信息
     param[@"addressID"] = self.addressDic[@"uaid"]; // 用户收货地址ID
     param[@"userID"] = self.addressDic[@"userid"]; // 用户id
-    param[@"goodsInfo"] = self.goodsParam; // 商品信息
-    [KGServerTool createOrderQRCode:param orderQRCodeBlock:^(NSString *QRImage) {
+
+    typeof(self) weakSelf = self;
+    [KGServerTool createOrderQRCode:param orderQRCodeBlock:^(NSString *QRImage, NSString *orderID) {
+        self.orderID = orderID;
         CZUpdataView *backView = [CZUpdataView updataView];
+        self.backView = backView;
         [backView getQRCode:QRImage];
         backView.frame = [UIScreen mainScreen].bounds;
         backView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.4];
-        [[UIApplication sharedApplication].keyWindow addSubview: backView];
+        [weakSelf.view addSubview:backView];
+         self.timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(getOrderInfo) userInfo:nil repeats:YES];
     }];
+}
 
+// 轮训订单支付情况
+- (void)getOrderInfo
+{
+    NSMutableDictionary *param = [NSMutableDictionary dictionary];
+    param[@"orderID"] = self.orderID;
+    param[@"userID"] = self.addressDic[@"userid"];
+    NSString *url = [KGSERVER_URL stringByAppendingPathComponent:@"app/my/order/orderInfo.do"];
+    [GXNetTool PostNetWithUrl:url body:param bodySytle:GXRequsetStyleBodyHTTP header:nil response:GXResponseStyleJSON success:^(id result) {
+        if ([result[@"success"] isEqualToNumber:@(1)])
+        {
+            if ([result[@"orderInfo"][@"paymentstatus"] isEqualToNumber:@(12)]) {
+                [self deleteWithSelectedGoods:nil];
+                [self.timer invalidate];
+                [CZProgressHUD showProgressHUDWithText:@"支付成功"];
+                [CZProgressHUD hideAfterDelay:1.5];
+                [self.backView removeFromSuperview ];
+            } else if ([result[@"orderInfo"][@"paymentstatus"] isEqualToNumber:@(8)]) {
+                [CZProgressHUD showProgressHUDWithText:@"支付失败"];
+                [CZProgressHUD hideAfterDelay:1.5];
+                [self.timer invalidate];
+            }
+        }
+
+    } failure:^(NSError *error) {}];
 }
 
 // 前往支付
 - (void)buyBtnAction:(UIButton *)sender
 {
     if ([sender.titleLabel.text isEqualToString:@"删除"]) {
-        GXSqliteTool *tool = [GXSqliteTool sqliteTool];
-
-        for (int i = 0; i < self.goodsParam.count; i++) {
-            NSDictionary *dic = self.goodsParam[i];
-             [tool deleteWithText:dic[@"goodsID"]];
-        }
-
-        self.array = [NSMutableArray arrayWithArray:[tool select]];
-        self.priceLabel.text = @"0";
-        [self.goodsParam removeAllObjects];
-        [self.tableView reloadData];
+        [self deleteWithSelectedGoods:self.goodsParam];
     } else {
         // 支付
     }
+}
+
+// 删除数据
+- (void)deleteWithSelectedGoods:(NSMutableArray *)goodsParam
+{
+    GXSqliteTool *tool = [GXSqliteTool sqliteTool];
+
+    if (goodsParam.count > 0) {
+        for (int i = 0; i < goodsParam.count; i++) {
+            NSDictionary *dic = goodsParam[i];
+            [tool deleteWithText:dic[@"goodsID"]];
+        }
+        [goodsParam removeAllObjects];
+    } else {
+        [tool delete];
+        [self.goodsParam removeAllObjects];
+    }
+    self.array = [NSMutableArray arrayWithArray:[tool select]];
+    self.priceLabel.text = @"0";
+    [self.tableView reloadData];
 }
 #pragma mark -- end
 

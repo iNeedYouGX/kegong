@@ -18,7 +18,7 @@
                 <rect key="frame" x="0.0" y="0.0" width="423" height="86.5"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="l1i-o7-5Jl">
+                    <button opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="l1i-o7-5Jl">
                         <rect key="frame" x="14" y="32" width="21" height="23"/>
                         <state key="normal" backgroundImage="round-nor"/>
                         <state key="selected" backgroundImage="round-sel"/>

@@ -128,7 +128,7 @@
                 <outlet property="selectedImage" destination="z5M-ds-fZZ" id="fCN-1C-1gc"/>
                 <outlet property="subTitleLabel" destination="YVo-YC-C3h" id="6Y4-Pj-qNJ"/>
             </connections>
-            <point key="canvasLocation" x="190" y="23"/>
+            <point key="canvasLocation" x="48" y="-12"/>
         </tableViewCell>
     </objects>
     <resources>

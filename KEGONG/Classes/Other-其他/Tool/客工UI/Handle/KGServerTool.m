@@ -44,7 +44,7 @@
 
     [GXNetTool GetNetWithUrl:[KGSERVER_URL stringByAppendingPathComponent:@"/my/pay/PlaceOrder.do"] body:param header:nil response:GXResponseStyleJSON success:^(id result) {
         if ([result[@"success"] isEqualToString:@"true"]) {
-            QRCodeblock(result[@"data"][@"code_url"]);
+            QRCodeblock(result[@"data"][@"code_url"], orderID);
         }
         //隐藏菊花
         [CZProgressHUD hideAfterDelay:0];

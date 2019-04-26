@@ -15,6 +15,7 @@
 //视图
 #import "CZNavigationView.h"
 #import "CZUpdataView.h"
+#import "KGShoppingBtnsModule.h"
 //跳转
 #import "KGMyClientController.h"
 
@@ -46,9 +47,7 @@
 @property (nonatomic, weak) IBOutlet UIView *changeAddressView;
 
 /** 底部View */
-@property (nonatomic, strong) UIView *bottomView;
-/** 实付款 */
-@property (nonatomic, strong) UILabel *priceLabel;
+@property (nonatomic, strong) KGShoppingBtnsModule *bottomView;
 
 // 辅助
 /** 客户保存地址 */
@@ -59,68 +58,44 @@
 static CGFloat const likeAndShareHeight = 49;
 @implementation CZAffirmPointController
 #pragma mark - 视图
-- (UIView *)bottomView
+- (KGShoppingBtnsModule *)bottomView
 {
     if (_bottomView == nil) {
-        _bottomView = [[UIView alloc] init];
-        _bottomView.x = 0;
-        _bottomView.y = SCR_HEIGHT - likeAndShareHeight - (IsiPhoneX ? 34 : 0);
-        _bottomView.width = SCR_WIDTH;
-        _bottomView.height = likeAndShareHeight;
-
-        UILabel *titleLabel = [[UILabel alloc] init];
-        titleLabel.text = @"实付款：";
-        titleLabel.font = [UIFont fontWithName:@"PingFangSC-Regular" size: 12];
-        [titleLabel sizeToFit];
-        titleLabel.textColor = CZGlobalGray;
-        titleLabel.x = 25;
-        titleLabel.centerY = likeAndShareHeight / 2.0;
-        [_bottomView addSubview:titleLabel];
-        // 点击事件
-        //        [btn addTarget:self action:@selector(serviceBtnClickedBtn:) forControlEvents:UIControlEventTouchUpInside];
-
-        UILabel *priceLabel = [[UILabel alloc] init];
+        _bottomView = [[KGShoppingBtnsModule alloc] initWithFrame:CGRectMake(0, SCR_HEIGHT - likeAndShareHeight - (IsiPhoneX ? 34 : 0), SCR_WIDTH, likeAndShareHeight)];
         NSString *price = [NSString stringWithFormat:@"¥%ld", [self.dataSource[@"price"] integerValue] * [self.numberLabel.text integerValue]];
-        priceLabel.text = price;
-        priceLabel.font = [UIFont fontWithName:@"PingFangSC-Medium" size: 12];
-        [priceLabel sizeToFit];
-        priceLabel.textColor = CZREDCOLOR;
-        priceLabel.x = CZGetX(titleLabel);
-        priceLabel.y = titleLabel.y;
-        [_bottomView addSubview:priceLabel];
-        self.priceLabel = priceLabel;
-        // 点击事件
-        //        [btn addTarget:self action:@selector(serviceBtnClicked1Btn:) forControlEvents:UIControlEventTouchUpInside];
-
-
-        UIButton *buyBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [buyBtn setTitle:@"前往支付" forState:UIControlStateNormal];
-        buyBtn.titleLabel.font = [UIFont fontWithName:@"PingFangSC-Medium" size: 15];
-        [buyBtn setBackgroundColor:CZREDCOLOR];
-        [buyBtn addTarget:self action:@selector(buyBtnAction:) forControlEvents:UIControlEventTouchUpInside];
-        buyBtn.x = SCR_WIDTH - 14 - 100;
-        buyBtn.y = 5.5;
-        buyBtn.width = 100;
-        buyBtn.height = 38;
-        buyBtn.layer.cornerRadius = 19;
-        [_bottomView addSubview:buyBtn];
-
-        UIButton *shopping = [UIButton buttonWithType:UIButtonTypeCustom];
-        [shopping setTitle:@"生成付款码" forState:UIControlStateNormal];
-        shopping.titleLabel.font = [UIFont fontWithName:@"PingFangSC-Medium" size: 15];
-        [shopping setBackgroundColor:UIColorFromRGB(0x4A90E2)];
-        [shopping addTarget:self action:@selector(shoppingTrolleyBtnAction:) forControlEvents:UIControlEventTouchUpInside];
-        shopping.x = SCR_WIDTH - 14 - 100 - 20 - 100;
-        shopping.y = 5.5;
-        shopping.width = 100;
-        shopping.height = 38;
-        shopping.layer.cornerRadius = 19;
-        [_bottomView addSubview:shopping];
+        self.bottomView.price = price;
+        typeof(self) weakSelf = self;
+        _bottomView.QRBlock = ^{
+            if (!weakSelf.addressDic) {
+                [CZProgressHUD showProgressHUDWithText:@"请选择客户"];
+                [CZProgressHUD hideAfterDelay:1.5];
+                return;
+            }
+            NSMutableDictionary *param = [NSMutableDictionary dictionary];
+            param[@"addressID"] = weakSelf.addressDic[@"uaid"]; // 用户收货地址ID
+            param[@"userID"] = weakSelf.addressDic[@"userid"]; // 用户id
+            param[@"goodsInfo"] = @[@{
+                                        @"goodsID" : weakSelf.dataSource[@"gid"],
+                                        @"goodsCount" : weakSelf.numberLabel.text
+                                      }];
+            // 商品信息
+            [KGServerTool createOrderQRCode:param orderQRCodeBlock:^(NSString *QRImage, NSString *orderID) {
+                CZUpdataView *backView = [CZUpdataView updataView];
+                [backView getQRCode:QRImage];
+                backView.frame = [UIScreen mainScreen].bounds;
+                backView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.4];
+                [weakSelf.view addSubview:backView];
+            }];
+        };
+        _bottomView.buyBlock = ^{
+            NSLog(@"前往支付");
+        };
     }
     return _bottomView;
 }
-#pragma end -- end
+#pragma mark -- end
 
+#pragma mark - 周期
 - (void)viewDidLoad {
     [super viewDidLoad];
     //导航条
@@ -137,36 +112,14 @@ static CGFloat const likeAndShareHeight = 49;
     if ([self.dataSource[@"goodsPhotos"] count] > 0) {
         [self.bgImage sd_setImageWithURL:[NSURL URLWithString:[KGSERVER_URL stringByAppendingPathComponent:self.dataSource[@"goodsPhotos"][0][@"photopath"]]]];
     }
-
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(pushSearchController)];
     [self.addressView addGestureRecognizer:tap];
-
     // 底部视图
     [self.view addSubview:self.bottomView];
 }
+#pragma mark -- end
 
 #pragma mark - 事件
-/** 创建订单 */
-- (void)shoppingTrolleyBtnAction:(UIButton *)sender
-{
-    if (!self.addressDic) {
-        [CZProgressHUD showProgressHUDWithText:@"请选择客户"];
-        [CZProgressHUD hideAfterDelay:1.5];
-        return;
-    }
-    NSMutableDictionary *param = [NSMutableDictionary dictionary];
-    param[@"addressID"] = self.addressDic[@"uaid"]; // 用户收货地址ID
-    param[@"userID"] = self.addressDic[@"userid"]; // 用户id
-    param[@"goodsInfo"] = @[@{@"goodsID" : self.dataSource[@"gid"], @"goodsCount" : self.numberLabel.text}]; // 商品信息
-    [KGServerTool createOrderQRCode:param orderQRCodeBlock:^(NSString *QRImage) {
-        CZUpdataView *backView = [CZUpdataView updataView];
-        [backView getQRCode:QRImage];
-        backView.frame = [UIScreen mainScreen].bounds;
-        backView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.4];
-        [[UIApplication sharedApplication].keyWindow addSubview: backView];
-    }];
-}
-
 /** 加 */
 - (IBAction)add
 {
@@ -177,8 +130,7 @@ static CGFloat const likeAndShareHeight = 49;
     self.topNumberLabel.text = [NSString stringWithFormat:@"x%@", self.numberLabel.text];
     // 实付款
     NSString *price = [NSString stringWithFormat:@"¥%ld", [self.dataSource[@"price"] integerValue] * number];
-    self.priceLabel.text = price;
-    [self.priceLabel sizeToFit];
+    self.bottomView.price = price;
     self.moneyLabel.text = price;
     [self.moneyLabel sizeToFit];
 }
@@ -193,8 +145,7 @@ static CGFloat const likeAndShareHeight = 49;
     self.topNumberLabel.text = [NSString stringWithFormat:@"x%@", self.numberLabel.text];
     // 实付款
     NSString *price = [NSString stringWithFormat:@"¥%ld", [self.dataSource[@"price"] integerValue] * number];
-    self.priceLabel.text = price;
-    [self.priceLabel sizeToFit];
+    self.bottomView.price = price;
     self.moneyLabel.text = price;
     [self.moneyLabel sizeToFit];
 }
@@ -207,9 +158,10 @@ static CGFloat const likeAndShareHeight = 49;
     vc.delegate = self;
     [self.navigationController pushViewController:vc animated:YES];
 }
+#pragma mark -- end
 
 #pragma mark - 代理
-//KGMyClientControllerDelegate
+// KGMyClientControllerDelegate
 - (void)myClientController:(KGMyClientController *)vc updataAddress:(NSDictionary *)address
 {
     NSLog(@"%@", address);
@@ -231,7 +183,7 @@ static CGFloat const likeAndShareHeight = 49;
 
 
 #pragma mark - 获取数据
-
+#pragma mark -- end
 
 
 

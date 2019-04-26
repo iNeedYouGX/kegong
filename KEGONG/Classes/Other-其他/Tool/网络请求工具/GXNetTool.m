@@ -255,8 +255,10 @@
 
         }
         NSData *errorData = error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
-        NSDictionary *serializedData = [NSJSONSerialization JSONObjectWithData: errorData options:kNilOptions error:nil];
-        NSLog(@"error--%@",serializedData);
+        if (errorData != nil) {
+            NSDictionary *serializedData = [NSJSONSerialization JSONObjectWithData: errorData options:kNilOptions error:nil];
+            NSLog(@"error--%@",serializedData);
+        }
     }];
 }
 

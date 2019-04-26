@@ -82,7 +82,16 @@
 /** <#注释#> */
 - (IBAction)deleteView
 {
-    [self removeFromSuperview];
+    UIAlertController * alert = [UIAlertController alertControllerWithTitle:@"提示" message:@"支付未完成，关闭后无法清空购物车" preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction * ok = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleDefault handler:nil];
+    UIAlertAction * update = [UIAlertAction actionWithTitle:@"确定关闭" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [self removeFromSuperview];
+    }];
+    [alert addAction:ok];
+    [alert addAction:update];
+    UITabBarController *tabbar = (UITabBarController *)[[UIApplication sharedApplication].keyWindow rootViewController];
+    UINavigationController *nav = tabbar.selectedViewController;
+    [nav presentViewController:alert animated:YES completion:nil];
 }
 
 - (void)saveImage {

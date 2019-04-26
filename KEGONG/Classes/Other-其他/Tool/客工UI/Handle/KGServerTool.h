@@ -10,7 +10,7 @@
 
 
 NS_ASSUME_NONNULL_BEGIN
-typedef void(^orderQRCodeBlock)(NSString *);
+typedef void(^orderQRCodeBlock)(NSString *, NSString *);
 @interface KGServerTool : NSObject
 /** 创建订单生成二维码*/
 + (void)createOrderQRCode:(NSDictionary *)param orderQRCodeBlock:(orderQRCodeBlock) QRCodeblock;

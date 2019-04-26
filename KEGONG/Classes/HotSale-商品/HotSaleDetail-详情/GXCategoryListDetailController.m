@@ -14,6 +14,8 @@
 #import "CZSubButton.h"
 #import "CZAffirmPointController.h" //确认订单
 
+// 工具
+#import <UMShare/UMShare.h>
 #import "GXSqliteTool.h"
 
 @interface GXCategoryListDetailController () <UIScrollViewDelegate, UIWebViewDelegate>
@@ -23,6 +25,8 @@
 @property (nonatomic, strong) UIScrollView *scrollerView;
 /** 返回键 */
 @property (nonatomic, strong) UIButton *popButton;
+/** 分享 */
+@property (nonatomic, strong) UIButton *shareButton;
 /** webView */
 @property (nonatomic, strong) UIWebView *webView;
 /** 底部View */
@@ -62,6 +66,20 @@ static CGFloat const likeAndShareHeight = 49;
     [self.navigationController popViewControllerAnimated:YES];
 }
 
+- (UIButton *)shareButton
+{
+    if (_shareButton == nil) {
+        _shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_shareButton addTarget:self action:@selector(shareButtonAction) forControlEvents:UIControlEventTouchUpInside];
+        _shareButton.frame = CGRectMake(SCR_WIDTH - 14 - 30, (IsiPhoneX ? 54 : 30), 30, 30);
+        [_shareButton setImage:[UIImage imageNamed:@"Trail-share"] forState:UIControlStateNormal];
+        _shareButton.backgroundColor = [UIColor colorWithRed:21/255.0 green:21/255.0 blue:21/255.0 alpha:0.3];
+        _shareButton.layer.cornerRadius = 15;
+        _shareButton.layer.masksToBounds = YES;
+    }
+    return _shareButton;
+}
+
 - (UIView *)bottomView
 {
     if (_bottomView == nil) {
@@ -95,7 +113,6 @@ static CGFloat const likeAndShareHeight = 49;
         // 点击事件
         [btn1 addTarget:self action:@selector(gotoShoppingCar:) forControlEvents:UIControlEventTouchUpInside];
 
-
         UIButton *buyBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         [buyBtn setTitle:@"立即购买" forState:UIControlStateNormal];
         buyBtn.titleLabel.font = [UIFont fontWithName:@"PingFangSC-Medium" size: 15];
@@ -128,13 +145,14 @@ static CGFloat const likeAndShareHeight = 49;
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor whiteColor];
-
     // 获取数据
     [self getDataSource];
     // 创建滚动视图
     [self.view addSubview:self.scrollerView];
     // 加载pop按钮
     [self.view addSubview:self.popButton];
+    // 加载分享按钮
+    [self.view addSubview:self.shareButton];
 
     [self.view addSubview:self.bottomView];
 
@@ -288,6 +306,30 @@ static CGFloat const likeAndShareHeight = 49;
 }
 
 #pragma mark - 事件
+// 分享
+- (void)shareButtonAction
+{
+    //创建分享消息对象
+    UMSocialMessageObject *messageObject = [UMSocialMessageObject messageObject];
+
+    //创建网页内容对象
+    UMShareWebpageObject *shareObject = [UMShareWebpageObject shareObjectWithTitle:self.dataSource[@"gname"] descr:self.dataSource[@"overview"] thumImage:[KGSERVER_URL stringByAppendingPathComponent:self.dataSource[@"thumbnail"]]];
+    //设置网页地址
+    shareObject.webpageUrl =@"http://baidu.com";
+
+    //分享消息对象设置分享内容对象
+    messageObject.shareObject = shareObject;
+
+    //调用分享接口
+    [[UMSocialManager defaultManager] shareToPlatform:UMSocialPlatformType_WechatSession messageObject:messageObject currentViewController:self completion:^(id data, NSError *error) {
+        if (error) {
+            NSLog(@"************Share fail with error %@*********",error);
+        }else{
+            NSLog(@"response data is %@",data);
+        }
+    }];
+}
+
 // 跳转购物车
 - (void)gotoShoppingCar:(UIButton *)sender
 {

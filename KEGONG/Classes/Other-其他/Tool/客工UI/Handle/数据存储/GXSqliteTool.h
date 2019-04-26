@@ -19,6 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)deleteWithText:(NSString *)text;
 
+- (void)delete;
+
 - (NSArray *)select;
 
 - (NSArray *)selectWithText:(NSString *)text;

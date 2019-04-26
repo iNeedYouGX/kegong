@@ -140,6 +140,18 @@ static sqlite3 *_db;
     }
 }
 
+- (void)delete
+{
+    NSString *sql = @"delete from t_shoptrolley";
+    char *error;
+    int success = sqlite3_exec(_db, sql.UTF8String, NULL, NULL, &error);
+    if (success == SQLITE_OK) {
+        NSLog(@"删除数据成功");
+    } else {
+        NSLog(@"删除数据失败");
+    }
+}
+
 - (NSArray *)selectWithText:(NSString *)text
 {
     NSString *sql = [NSString stringWithFormat:@"select * from t_shoptrolley WHERE shopName = '%@'", text];

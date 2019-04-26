@@ -46,7 +46,7 @@
     [self setupWithController:[[KGShoppingTrolleyController alloc] init] title:@"购物车" image:@"tab-cart-nor" selectedImage:@"tab-cart-sel"];
     [self setupWithController:[[CZMeControllerViewController alloc] init] title:@"我的" image:@"tab-people-nor" selectedImage:@"tab-people-sel"];
     
-    self.selectedIndex = 2;
+    self.selectedIndex = 1;
     self.tabBar.clipsToBounds = YES;
 }
 

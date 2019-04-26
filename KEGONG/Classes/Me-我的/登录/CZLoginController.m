@@ -60,7 +60,7 @@ static id instancet_;
         {
             [CZProgressHUD showProgressHUDWithText:@"登录成功"];
 
-//            //cookies获取
+            //cookies获取
                 NSHTTPCookieStorage *cookieJar = [NSHTTPCookieStorage sharedHTTPCookieStorage];
                 NSArray *cookieArr = [cookieJar cookies];
                 for(NSHTTPCookie *cookie in cookieArr) {
