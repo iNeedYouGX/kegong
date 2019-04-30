@@ -140,6 +140,41 @@ static CGFloat const likeAndShareHeight = 49;
     return _bottomView;
 }
 
+- (UIView *)setupNav
+{
+    UIView *topView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, SCR_WIDTH, (IsiPhoneX ? 44 + 40 : 20 + 40))];
+    topView.backgroundColor = [UIColor whiteColor];
+    UIButton *leftBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [leftBtn setImage:[UIImage imageNamed:@"nav-back"] forState:UIControlStateNormal];
+    [leftBtn addTarget:self action:@selector(popAction) forControlEvents:UIControlEventTouchUpInside];
+    leftBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+    leftBtn.contentEdgeInsets = UIEdgeInsetsMake(0, 20, 0, 0);
+    [topView addSubview:leftBtn];
+    leftBtn.size = CGSizeMake(60, 40);
+    leftBtn.y = (IsiPhoneX ? 44 : 20);
+
+    UILabel *titleLabel = [[UILabel alloc] init];
+    titleLabel.text = @"商品详情";
+    titleLabel.font = [UIFont fontWithName:@"PingFangSC-Medium" size: 15];
+    titleLabel.textColor = [UIColor blackColor];
+    [topView addSubview:titleLabel];
+    [titleLabel sizeToFit];
+    titleLabel.centerX = topView.width / 2.0;
+    titleLabel.centerY = leftBtn.centerY;
+
+    UIButton *rightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [rightBtn setImage:[UIImage imageNamed:@"Trail-share-black"] forState:UIControlStateNormal];
+    [rightBtn setImage:[UIImage imageNamed:@"Trail-share-black"] forState:UIControlStateSelected];
+    [rightBtn addTarget:self action:@selector(shareButtonAction) forControlEvents:UIControlEventTouchUpInside];
+    rightBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
+    rightBtn.contentEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 20);
+    [topView addSubview:rightBtn];
+    rightBtn.size = CGSizeMake(60, 40);
+    rightBtn.centerY = leftBtn.centerY;
+    rightBtn.x = topView.width - rightBtn.width;
+    return topView;
+}
+
 
 
 - (void)viewDidLoad {
@@ -159,7 +194,7 @@ static CGFloat const likeAndShareHeight = 49;
     //导航条
     UIView *navigationBackView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, SCR_WIDTH, 67 + (IsiPhoneX ? 24 : 0))];
     navigationBackView.backgroundColor = [UIColor whiteColor];
-    CZNavigationView *navigationView = [[CZNavigationView alloc] initWithFrame:CGRectMake(0, (IsiPhoneX ? 24 : 0), SCR_WIDTH, 67) title:@"商品详情" rightBtnTitle:nil rightBtnAction:nil navigationViewType:nil];
+    CZNavigationView *navigationView = [self setupNav];;
     navigationView.backgroundColor = [UIColor whiteColor];
     [navigationBackView addSubview:navigationView];
     [self.view addSubview:navigationBackView];
@@ -315,7 +350,7 @@ static CGFloat const likeAndShareHeight = 49;
     //创建网页内容对象
     UMShareWebpageObject *shareObject = [UMShareWebpageObject shareObjectWithTitle:self.dataSource[@"gname"] descr:self.dataSource[@"overview"] thumImage:[KGSERVER_URL stringByAppendingPathComponent:self.dataSource[@"thumbnail"]]];
     //设置网页地址
-    shareObject.webpageUrl =@"http://baidu.com";
+    shareObject.webpageUrl = [NSString stringWithFormat:@"%@/h5/goodsShare.html?gid=1%@&guideid=%@", KGSERVER_URL, self.pointId, JPUSERINFO[@"userid"]];
 
     //分享消息对象设置分享内容对象
     messageObject.shareObject = shareObject;

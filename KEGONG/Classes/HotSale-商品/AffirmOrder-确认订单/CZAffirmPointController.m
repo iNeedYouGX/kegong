@@ -52,7 +52,12 @@
 // 辅助
 /** 客户保存地址 */
 @property (nonatomic, strong) NSDictionary *addressDic;
-
+/** 定时器 */
+@property (nonatomic, strong) NSTimer *timer;
+/** 记录订单 */
+@property (nonatomic, strong) NSString *orderID;
+/** 弹出的二维码 */
+@property (nonatomic, strong) CZUpdataView *backView;
 @end
 
 static CGFloat const likeAndShareHeight = 49;
@@ -80,11 +85,14 @@ static CGFloat const likeAndShareHeight = 49;
                                       }];
             // 商品信息
             [KGServerTool createOrderQRCode:param orderQRCodeBlock:^(NSString *QRImage, NSString *orderID) {
+                weakSelf.orderID = orderID;
                 CZUpdataView *backView = [CZUpdataView updataView];
+                weakSelf.backView = backView;
                 [backView getQRCode:QRImage];
                 backView.frame = [UIScreen mainScreen].bounds;
                 backView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.4];
                 [weakSelf.view addSubview:backView];
+                 weakSelf.timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:weakSelf selector:@selector(getOrderInfo) userInfo:nil repeats:YES];
             }];
         };
         _bottomView.buyBlock = ^{
@@ -93,6 +101,7 @@ static CGFloat const likeAndShareHeight = 49;
     }
     return _bottomView;
 }
+
 #pragma mark -- end
 
 #pragma mark - 周期
@@ -120,6 +129,30 @@ static CGFloat const likeAndShareHeight = 49;
 #pragma mark -- end
 
 #pragma mark - 事件
+// 开启轮训订单情况
+- (void)getOrderInfo
+{
+    NSMutableDictionary *param = [NSMutableDictionary dictionary];
+    param[@"orderID"] = self.orderID;
+    param[@"userID"] = self.addressDic[@"userid"];
+    NSString *url = [KGSERVER_URL stringByAppendingPathComponent:@"app/my/order/orderInfo.do"];
+    [GXNetTool PostNetWithUrl:url body:param bodySytle:GXRequsetStyleBodyHTTP header:nil response:GXResponseStyleJSON success:^(id result) {
+        if ([result[@"success"] isEqualToNumber:@(1)])
+        {
+            if ([result[@"orderInfo"][@"paymentstatus"] isEqualToNumber:@(12)]) {
+
+                [self.timer invalidate];
+                [CZProgressHUD showProgressHUDWithText:@"支付成功"];
+                [CZProgressHUD hideAfterDelay:1.5];
+                [self.backView removeFromSuperview ];
+            } else if ([result[@"orderInfo"][@"paymentstatus"] isEqualToNumber:@(8)]) {
+                [CZProgressHUD showProgressHUDWithText:@"支付失败"];
+                [CZProgressHUD hideAfterDelay:1.5];
+                [self.timer invalidate];
+            }
+        }
+    } failure:^(NSError *error) {}];
+}
 /** 加 */
 - (IBAction)add
 {

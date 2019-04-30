@@ -13,6 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface CZUpdataView : UIView
 + (instancetype)updataView;
 - (void)getQRCode:(NSString *)QRStr;
+/** 判断是否是购物车过来的 */
+@property (nonatomic, assign) BOOL isShoppingTrolley;
 @end
 
 NS_ASSUME_NONNULL_END

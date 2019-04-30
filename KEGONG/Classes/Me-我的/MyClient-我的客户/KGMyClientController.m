@@ -68,13 +68,6 @@
 // 获取我的列表数据
 - (void)getDataSource
 {
-//    // 获取类目数据
-//    NSString *path = [[NSBundle mainBundle] pathForResource:@"hotSaleDataList.json" ofType:nil];
-//    NSData *data = [[NSData alloc] initWithContentsOfFile:path];
-//    NSDictionary *sourceData = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
-//    self.listArr = sourceData[@"children"];
-//    [self.tableView reloadData];
-
     //获取数据
     NSMutableDictionary *param = [NSMutableDictionary dictionary];
     param[@"pageon"] = @(1);
@@ -93,14 +86,6 @@
 // 获取代客下单时列表数据
 - (void)getOrderDataSource
 {
-    //    // 获取类目数据
-    //    NSString *path = [[NSBundle mainBundle] pathForResource:@"hotSaleDataList.json" ofType:nil];
-    //    NSData *data = [[NSData alloc] initWithContentsOfFile:path];
-    //    NSDictionary *sourceData = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
-    //    self.listArr = sourceData[@"children"];
-    //    [self.tableView reloadData];
-
-
     //获取数据
     NSMutableDictionary *param = [NSMutableDictionary dictionary];
     param[@"pageon"] = @(1);

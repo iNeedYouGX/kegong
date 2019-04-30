@@ -17,7 +17,7 @@
 
 + (NSDictionary *)setupHeader
 {
-    NSString *CONSTANT_KEY = @"quality-shop";
+    NSString *CONSTANT_KEY = @"shop";
     NSString *timestamp = [self getNowTimeTimestamp3];
     NSString *MD5string = [KCUtilMd5 stringToMD5:[NSString stringWithFormat:@"%@%@", CONSTANT_KEY, timestamp]];
     // 获取UUID
@@ -242,6 +242,7 @@
         [CZProgressHUD hideAfterDelay:2];
         NSInteger codeStatus = [error.userInfo[AFNetworkingOperationFailingURLResponseErrorKey] statusCode];
         NSLog(@"statusCode--%ld", codeStatus);
+        
         if (codeStatus == 401) {
             CZLoginController *vc = [CZLoginController shareLoginController];
             UITabBarController *tabbar = (UITabBarController *)[[UIApplication sharedApplication].keyWindow rootViewController];

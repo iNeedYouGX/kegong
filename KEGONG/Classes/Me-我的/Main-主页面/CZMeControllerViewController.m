@@ -10,6 +10,7 @@
 #import "CZNavigationView.h"
 #import "CZLoginController.h"
 #import "KGMyClientController.h"
+#import "GXNetTool.h"
 
 @interface CZMeControllerViewController ()
 /** 登录 */
@@ -23,14 +24,26 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"isLogin"]) {
-        self.nameLabel.text = [CZSaveTool objectForKey:@"userName"];
-        [self.nameLabel sizeToFit];
-        [self.loginOut setTitle:@"退出账号" forState:UIControlStateNormal];
-    } else {
-        [self.loginOut setTitle:@"登录" forState:UIControlStateNormal];
-    }
+    [self setUserInfo];
+}
 
+- (void)setUserInfo
+{
+    NSMutableDictionary *param = [NSMutableDictionary dictionary];
+    //获取详情数据
+    [GXNetTool GetNetWithUrl:[KGSERVER_URL stringByAppendingPathComponent:@"/app/my/user/getUserInfo.do"] body:param header:nil response:GXResponseStyleJSON success:^(id result) {
+        if ([result[@"success"] isEqualToNumber:@(1)]) {
+            [CZSaveTool setObject:result[@"salesInfo"] forKey:@"user"];
+            self.nameLabel.text = JPUSERINFO[@"username"];
+            [self.nameLabel sizeToFit];
+        }
+        //隐藏菊花
+        [CZProgressHUD hideAfterDelay:0];
+
+    } failure:^(NSError *error) {
+        //隐藏菊花
+        [CZProgressHUD hideAfterDelay:0];
+    }];
 }
 
 - (void)viewDidLoad {
@@ -54,14 +67,13 @@
     self.loginOut = loginOut;
     loginOut.frame = CGRectMake(14, SCR_HEIGHT - ((IsiPhoneX ? 83 : 49) + 36 + 46), SCR_WIDTH - 28, 36);
     [self.view addSubview:loginOut];
-    [loginOut setTitle:@"登录" forState:UIControlStateNormal];
+    [loginOut setTitle:@"退出登录" forState:UIControlStateNormal];
     loginOut.titleLabel.font = [UIFont systemFontOfSize:16];
     [loginOut setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [loginOut setBackgroundImage:[UIImage imageNamed:@"background"] forState:UIControlStateNormal];
     loginOut.layer.cornerRadius = 18;
     loginOut.layer.masksToBounds = YES;
     [loginOut addTarget:self action:@selector(loginOutActionWithBtn:) forControlEvents:UIControlEventTouchUpInside];
-
 }
 #pragma mark -- end
 
@@ -134,16 +146,11 @@
 // 退出事件
 - (void)loginOutActionWithBtn:(UIButton *)sender
 {
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"isLogin"]) {
-        [CZSaveTool setObject:@"" forKey:@"userName"];
-        self.nameLabel.text = [CZSaveTool objectForKey:@"userName"];
-        [self.nameLabel sizeToFit];
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"isLogin"];
-        [self.loginOut setTitle:@"登录" forState:UIControlStateNormal];
-    } else {
-        CZLoginController *vc = [CZLoginController shareLoginController];
-        [self presentViewController:vc animated:YES completion:nil];
-    }
+    [CZSaveTool setObject:@"" forKey:@"token"];
+     if ([JPTOKEN length] <= 0) {
+         CZLoginController *vc = [CZLoginController shareLoginController];
+         [self presentViewController:vc animated:YES completion:nil];
+     }
 }
 
 // 跳转到我的客户

@@ -53,13 +53,11 @@ static id instancet_;
     param[@"mobile"] = self.userTextField.text;
     param[@"password"] = [KCUtilMd5 stringToMD5:self.passwordTextField.text];;
     
-  
     NSString *url = [KGSERVER_URL stringByAppendingPathComponent:@"/app/user/SalesLogin.do"];
     [GXNetTool PostNetWithUrl:url body:param bodySytle:GXRequsetStyleBodyHTTP header:nil response:GXResponseStyleJSON success:^(id result) {
         if ([result[@"success"] isEqualToNumber:@(1)])
         {
             [CZProgressHUD showProgressHUDWithText:@"登录成功"];
-
             //cookies获取
                 NSHTTPCookieStorage *cookieJar = [NSHTTPCookieStorage sharedHTTPCookieStorage];
                 NSArray *cookieArr = [cookieJar cookies];
@@ -73,9 +71,6 @@ static id instancet_;
                 }
             // 是否登录
             self.isLogin = YES;
-            // 存储用户信息, 都TM存储上了
-            [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"isLogin"];
-            [CZSaveTool setObject:self.userTextField.text forKey:@"userName"];
             // 删除账号密码
             self.userTextField.text = nil;
             self.passwordTextField.text = nil;
@@ -100,6 +95,12 @@ static id instancet_;
     
     // 接收登录时候的通知
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dismissViewController) name:loginChangeUserInfo object:nil];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    self.userTextField.text = @"15900000000";
 }
 
 - (void)dismissViewController
@@ -142,13 +143,13 @@ static id instancet_;
     return YES;
 }
 
-
 /** 激活红色 */
 - (void)enabledAndRedColor:(UIButton *)btn
 {
     btn.backgroundColor = CZREDCOLOR;
     btn.enabled = YES;
 }
+
 /** 残疾灰色 */
 - (void)disabledAndGrayColor:(UIButton *)btn
 {

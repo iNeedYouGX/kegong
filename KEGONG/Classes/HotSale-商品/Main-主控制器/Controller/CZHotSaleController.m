@@ -36,7 +36,7 @@
     NSMutableDictionary *param = [NSMutableDictionary dictionary];
     [GXNetTool GetNetWithUrl:[KGSERVER_URL stringByAppendingPathComponent:@"/app/variables.do"] body:param header:nil response:GXResponseStyleJSON success:^(id result) {
         if ([result[@"success"] isEqual:@(1)]) {
-            KGIMAGEURL = result[@"variableMap"][@"image_path"];
+            KGIMAGEURL = result[@"variableMap"][@"imageserver_path"];
             // 获取类目数据
             [self obtainTtitles];
         }
@@ -107,6 +107,42 @@
 
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [self isLogin];
+}
+
+- (void)isLogin
+{
+    //获取数据
+    NSMutableDictionary *param = [NSMutableDictionary dictionary];
+    [GXNetTool GetNetWithUrl:[KGSERVER_URL stringByAppendingPathComponent:@"/app/user/IsLogin.do"] body:param header:nil response:GXResponseStyleJSON success:^(id result) {
+        if ([result[@"isLogin"] isEqual:@(0)]) {
+            CZLoginController *vc = [CZLoginController shareLoginController];
+            UITabBarController *tabbar = (UITabBarController *)[[UIApplication sharedApplication].keyWindow rootViewController];
+            UINavigationController *nav = tabbar.selectedViewController;
+            UIViewController *currentVc = nav.topViewController;
+            [currentVc.navigationController popViewControllerAnimated:YES];
+            [nav presentViewController:vc animated:YES completion:^{
+                [CZProgressHUD showProgressHUDWithText:@"请重新登录"];
+                [CZProgressHUD hideAfterDelay:2];
+            }];
+        } else {
+            if (self.mainTitles.count == 0) {
+                for (UIView *v in self.view.subviews) {
+                    [v removeFromSuperview];
+                }
+                [self setupTopSearchView];
+                // 获取url
+                [self getImageUrl];
+            }
+
+        }
+        //隐藏菊花
+        [CZProgressHUD hideAfterDelay:0];
+    } failure:^(NSError *error) {}];
+}
 #pragma mark -- end
 
 @end

@@ -31,7 +31,7 @@
 - (void)setDicData:(NSDictionary *)dicData
 {
     _dicData = dicData;
-    [self.bigImage sd_setImageWithURL:[NSURL URLWithString:[KGIMAGEURL stringByAppendingPathComponent:dicData[@"thumbnail"]]] placeholderImage:[UIImage imageNamed:@"logo"]];
+    [self.bigImage sd_setImageWithURL:[NSURL URLWithString:[KGIMAGEURL stringByAppendingPathComponent:[dicData[@"thumbnail"] isKindOfClass:[NSNull class]] ? @"" : dicData[@"thumbnail"]]] placeholderImage:[UIImage imageNamed:@"logo"]];
     self.titleLabel.text = dicData[@"gtname"];
 
 }

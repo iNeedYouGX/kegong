@@ -457,6 +457,7 @@ static CGFloat const likeAndShareHeight = 49;
     [KGServerTool createOrderQRCode:param orderQRCodeBlock:^(NSString *QRImage, NSString *orderID) {
         self.orderID = orderID;
         CZUpdataView *backView = [CZUpdataView updataView];
+        backView.isShoppingTrolley = YES;
         self.backView = backView;
         [backView getQRCode:QRImage];
         backView.frame = [UIScreen mainScreen].bounds;
@@ -466,7 +467,7 @@ static CGFloat const likeAndShareHeight = 49;
     }];
 }
 
-// 轮训订单支付情况
+// 开启轮训订单情况
 - (void)getOrderInfo
 {
     NSMutableDictionary *param = [NSMutableDictionary dictionary];
@@ -488,7 +489,6 @@ static CGFloat const likeAndShareHeight = 49;
                 [self.timer invalidate];
             }
         }
-
     } failure:^(NSError *error) {}];
 }
 
