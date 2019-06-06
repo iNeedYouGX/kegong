@@ -37,17 +37,11 @@ static id instancet_;
 
 #pragma mark - POP到前一页
 - (IBAction)popAction:(id)sender {
-//    UITabBarController *vc = (UITabBarController *)self.nextResponder;
-//    if (!_isLogin) {
-//        vc.selectedIndex = 0;
-//    }
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - 登录
 - (IBAction)loginAction:(id)sender {
-//    13922222222
-//    1234
     // 短信登录接口
     NSMutableDictionary *param = [NSMutableDictionary dictionary];
     param[@"mobile"] = self.userTextField.text;
@@ -88,7 +82,6 @@ static id instancet_;
 - (void)viewDidLoad {
     [super viewDidLoad];
 //    15900000000 1234
-    self.userTextField.text = @"15900000000";
     //代理方法监听时候都会慢一步
     [self.userTextField addTarget:self action:@selector(textFieldAction:) forControlEvents:UIControlEventEditingChanged];
     [self.passwordTextField addTarget:self action:@selector(textFieldAction:) forControlEvents:UIControlEventEditingChanged];
@@ -100,7 +93,9 @@ static id instancet_;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    self.userTextField.text = @"15900000000";
+        self.userTextField.text = @"15900000000";                                                                               
+//    self.userTextField.text = @"15618582405";
+    //    self.userTextField.text = @"13911112222";
 }
 
 - (void)dismissViewController
@@ -119,7 +114,6 @@ static id instancet_;
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     [self.view endEditing:YES];
 }
-
 
 - (void)textFieldAction:(UITextField *)textField
 {

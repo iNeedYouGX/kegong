@@ -30,13 +30,13 @@
     return self;
 }
 
-- (void)setFrame:(CGRect)frame
-{
-    CGRect rect = frame;
-    rect.size.width = SCR_WIDTH - 20;
-    rect.size.height = 34;
-    [super setFrame:rect];
-}
+//- (void)setFrame:(CGRect)frame
+//{
+//    CGRect rect = frame;
+//    rect.size.width = SCR_WIDTH - 20;
+//    rect.size.height = 34;
+//    [super setFrame:rect];
+//}
 
 - (void)setTextFieldActive:(BOOL)textFieldActive
 {

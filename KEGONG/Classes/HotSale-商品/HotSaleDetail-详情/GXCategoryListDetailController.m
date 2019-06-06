@@ -350,7 +350,8 @@ static CGFloat const likeAndShareHeight = 49;
     //创建网页内容对象
     UMShareWebpageObject *shareObject = [UMShareWebpageObject shareObjectWithTitle:self.dataSource[@"gname"] descr:self.dataSource[@"overview"] thumImage:[KGSERVER_URL stringByAppendingPathComponent:self.dataSource[@"thumbnail"]]];
     //设置网页地址
-    shareObject.webpageUrl = [NSString stringWithFormat:@"%@/h5/goodsShare.html?gid=1%@&guideid=%@", KGSERVER_URL, self.pointId, JPUSERINFO[@"userid"]];
+    shareObject.webpageUrl = [NSString stringWithFormat:@"%@/h5/goodsShare.html?gid=1%@&guideid=%@", @"https://eletest.eascs.com", self.pointId, JPUSERINFO[@"userid"]];
+    NSLog(@"%@", shareObject.webpageUrl);
 
     //分享消息对象设置分享内容对象
     messageObject.shareObject = shareObject;

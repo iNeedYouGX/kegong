@@ -18,8 +18,9 @@
 #import "KGServerTool.h"
 //跳转
 #import "KGMyClientController.h"
+#import "CZfeedbackController.h"
 
-@interface KGShoppingTrolleyController () <UITableViewDelegate, UITableViewDataSource, KGMyClientControllerDelegate>
+@interface KGShoppingTrolleyController () <UITableViewDelegate, UITableViewDataSource, KGMyClientControllerDelegate, CZfeedbackControllerDelegate>
 /** 表单 */
 @property (nonatomic, strong) UITableView *tableView;
 /** 数据 */
@@ -55,6 +56,9 @@
 @property (nonatomic, strong) NSTimer *timer;
 /** 弹出的二维码 */
 @property (nonatomic, strong) CZUpdataView *backView;
+
+/** 备注 */
+@property (nonatomic, strong) UILabel *remarkLabel;
 
 @end
 
@@ -96,9 +100,28 @@ static CGFloat const likeAndShareHeight = 49;
         self.tableView.delegate = self;
         self.tableView.dataSource = self;
         self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-        self.tableView.tableFooterView = [self setupClientView];
+        self.tableView.tableFooterView = [self setupFooterView];
     }
     return _tableView;
+}
+
+// 尾部视图
+- (UIView *)setupFooterView
+{
+    UIView *backView = [[UIView alloc] init];
+    backView.y = 0;
+    backView.width = SCR_WIDTH;
+    backView.height = 90 + 12 + 90 + 6;
+    backView.backgroundColor = CZGlobalLightGray;
+
+    UIView *view1 = [self setupClientView];
+    [backView addSubview:view1];
+
+     UIView *view2 = [self setuprRmarkView];
+    view2.y = 90 + 6;
+    [backView addSubview:view2];
+
+    return backView;
 }
 
 // 我的客户
@@ -109,7 +132,6 @@ static CGFloat const likeAndShareHeight = 49;
     backView.width = SCR_WIDTH;
     backView.height = 90 + 12;
     backView.backgroundColor = CZGlobalLightGray;
-    [self.view addSubview:backView];
 
     // 下面的背景
     UIView *addressView = [[UIView alloc] init];
@@ -191,7 +213,6 @@ static CGFloat const likeAndShareHeight = 49;
 
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(pushSearchController)];
     [topView addGestureRecognizer:tap];
-
     return backView;
 }
 
@@ -272,14 +293,52 @@ static CGFloat const likeAndShareHeight = 49;
     }
     return _bottomView;
 }
+
+// 添加备注
+- (UIView *)setuprRmarkView
+{
+    UIView *backView = [[UIView alloc] init];
+    backView.y = 0;
+    backView.width = SCR_WIDTH;
+    backView.height = 90 + 12;
+    backView.backgroundColor = CZGlobalLightGray;
+
+    // 盖子
+    UIView *topView = [[UIView alloc] init];
+    topView.y = 6;
+    topView.width = SCR_WIDTH;
+    topView.height = backView.height - 12;
+    topView.backgroundColor = CZGlobalWhiteBg;
+    [backView addSubview:topView];
+
+    UILabel *label = [[UILabel alloc] init];
+    label.numberOfLines = 0;
+    label.text = @"添加备注";
+    label.textColor = [UIColor colorWithRed:26/255.0 green:26/255.0 blue:26/255.0 alpha:1.0];
+    label.font = [UIFont fontWithName:@"PingFangSC-Regular" size: 15];
+    [label sizeToFit];
+    label.x = 14;
+    label.height = 90;
+    label.width = SCR_WIDTH - 30 - 14;
+    label.centerY = topView.height / 2.0;
+    [topView addSubview:label];
+    self.remarkLabel = label;
+
+    UIImageView *arrow = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"right"]];
+    arrow.x = SCR_WIDTH - 14 - arrow.width;
+    arrow.centerY = topView.height / 2.0;
+    [topView addSubview:arrow];
+
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(pushAddRemarkController)];
+    [topView addGestureRecognizer:tap];
+    return backView;
+}
 #pragma mark -- end
 
 #pragma mark - 生命周期
 - (void)viewDidLoad {
     [super viewDidLoad];
-
 //    [self.tableView reloadData];
-
     //导航条 @"完成"
     CZNavigationView *navigationView = [[CZNavigationView alloc] initWithFrame:CGRectMake(0, (IsiPhoneX ? 24 : 0), SCR_WIDTH, 67) title:@"购物车" rightBtnTitle:@"编辑" rightBtnAction:^(CZNavigationView *view) {
         if ([view.rightRecordBtn.titleLabel.text isEqualToString:@"编辑"]) {
@@ -329,6 +388,15 @@ static CGFloat const likeAndShareHeight = 49;
 #pragma mark -- end
 
 #pragma mark - 代理
+// CZfeedbackController
+- (void)feedbackController:(CZfeedbackController *)vc commitWithText:(NSString *)text
+{
+    self.remarkLabel.text = [NSString stringWithFormat:@"备注: %@", text];
+    [self.remarkLabel sizeToFit];
+    self.remarkLabel.x = 14;
+    self.remarkLabel.centerY = 90 / 2.0;
+}
+
 //KGMyClientControllerDelegate
 - (void)myClientController:(KGMyClientController *)vc updataAddress:(NSDictionary *)address
 {
@@ -342,6 +410,8 @@ static CGFloat const likeAndShareHeight = 49;
         self.labelName.text = address[@"mobile"];
         /** 地址 */
         self.addressLabel.text = address[@"address"];
+        CGRect rect = [self.addressLabel.text boundingRectWithSize:CGSizeMake(SCR_WIDTH - self.addressLabel.x - 30, 200.0) options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading attributes:@{NSFontAttributeName:self.addressLabel.font} context:nil];
+        self.addressLabel.height = rect.size.height;
     }
 }
 
@@ -395,7 +465,6 @@ static CGFloat const likeAndShareHeight = 49;
     }
     [self.tableView reloadData];
 }
-
 #pragma mark -- end
 
 #pragma mark - 事件
@@ -450,6 +519,7 @@ static CGFloat const likeAndShareHeight = 49;
     }
     NSMutableDictionary *param = [NSMutableDictionary dictionary];
     param[@"goodsInfo"] = self.goodsParam; // 商品信息
+    param[@"remark"] = self.remarkLabel.text;
     param[@"addressID"] = self.addressDic[@"uaid"]; // 用户收货地址ID
     param[@"userID"] = self.addressDic[@"userid"]; // 用户id
 
@@ -520,6 +590,14 @@ static CGFloat const likeAndShareHeight = 49;
     self.array = [NSMutableArray arrayWithArray:[tool select]];
     self.priceLabel.text = @"0";
     [self.tableView reloadData];
+}
+
+// 跳转到添加备注
+- (void)pushAddRemarkController
+{
+    CZfeedbackController *vc = [[CZfeedbackController alloc] init];
+    vc.delegate = self;
+    [self.navigationController pushViewController:vc animated:YES];
 }
 #pragma mark -- end
 

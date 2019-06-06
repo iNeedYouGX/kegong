@@ -31,7 +31,7 @@
     return paramHeader;
 }
 
-+(AFHTTPSessionManager *)GetNetWithUrl:(NSString *)url
++ (AFHTTPSessionManager *)GetNetWithUrl:(NSString *)url
                  body:(id)body
                header:(NSDictionary *)headers
              response:(GXResponseStyle)response
@@ -50,7 +50,7 @@
         [manager.requestSerializer setValue:JPTOKEN forHTTPHeaderField:@"Cookie"];
     }
 
-    //cookies获取
+//    //cookies获取
 //    NSHTTPCookieStorage *cookieJar = [NSHTTPCookieStorage sharedHTTPCookieStorage];
 //    NSArray *cookieArr = [cookieJar cookies];
 //    for(NSHTTPCookie *cookie in cookieArr) {
@@ -62,11 +62,9 @@
 //        NSLog(@"cookie －> %@", cookie);
 //        NSLog(@"cookie.name －> %@", cookie.name);
 //        NSLog(@"cookie.value －> %@", cookie.value);
-//                if ([cookie.name isEqualToString:@"access_token"]) {
-//                    //存储cookies
-//
-//
-//                }
+//        if ([cookie.name isEqualToString:@"access_token"]) {
+//            //存储cookies
+//        }
 ////        存储之后删除cookies
 //        [cookieJar deleteCookie:cookie];
 ////         修改cookies
@@ -98,7 +96,6 @@
     
     //(6)发送请求
     NSMutableDictionary *param = [NSMutableDictionary dictionaryWithDictionary:body];
-    param[@"client"] = @(2);
     [manager GET:url parameters:param progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
 
         NSDictionary *result = responseObject;
@@ -113,29 +110,28 @@
             UITabBarController *tabbar = (UITabBarController *)[[UIApplication sharedApplication].keyWindow rootViewController];
             UINavigationController *nav = tabbar.selectedViewController;
             UIViewController *currentVc = nav.topViewController;
-            [currentVc.navigationController popViewControllerAnimated:YES];
-            [nav presentViewController:vc animated:YES completion:^{
-                [CZProgressHUD showProgressHUDWithText:@"请重新登录"];
-                [CZProgressHUD hideAfterDelay:2];
-            }];
-
+            if (currentVc.navigationController.viewControllers.count > 0) {
+                [currentVc.navigationController popViewControllerAnimated:YES];
+            }
+            if (nav.presentedViewController == nil) {
+                [nav presentViewController:vc animated:YES completion:^{
+                    [CZProgressHUD showProgressHUDWithText:@"请重新登录"];
+                    [CZProgressHUD hideAfterDelay:2];
+                }];
+            }
         }
         NSData *errorData = error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
-        NSDictionary *serializedData = [NSJSONSerialization JSONObjectWithData: errorData options:kNilOptions error:nil];
-        NSLog(@"error--%@",serializedData);
+        if (errorData) {
+            NSDictionary *serializedData = [NSJSONSerialization JSONObjectWithData: errorData options:kNilOptions error:nil];
+            NSLog(@"error--%@",serializedData);
+        }
 
     }];
     return manager;
 }
 
 
-+(void)PostNetWithUrl:(NSString *)url
-                  body:(id)body
-             bodySytle:(GXRequsetStyle)bodyStyle
-                header:(NSDictionary *)headers
-              response:(GXResponseStyle)response
-               success:(blockOfSuccess)success
-               failure:(blockOfFailure)failure
++ (void)PostNetWithUrl:(NSString *)url body:(id)body bodySytle:(GXRequsetStyle)bodyStyle header:(NSDictionary *)headers response:(GXResponseStyle)response success:(blockOfSuccess)success failure:(blockOfFailure)failure
 {
     //(1)获取网络管理者
     AFHTTPSessionManager *manager = [[AFHTTPSessionManager  manager] initWithBaseURL:[NSURL URLWithString:url]];
@@ -185,13 +181,11 @@
 //        NSLog(@"cookie －> %@", cookie);
 //        NSLog(@"cookie.name －> %@", cookie.name);
 //        NSLog(@"cookie.value －> %@", cookie.value);
-        //        if ([cookie.name isEqualToString:@"access_token"]) {
-        //            //存储cookies
-        //
-        //
-        //        }
-        //存储之后删除cookies
-        //            [cookieJar deleteCookie:cookie];
+//        if ([cookie.name isEqualToString:@"access_token"]) {
+//            //存储cookies
+//        }
+//        //        存储之后删除cookies
+//        [cookieJar deleteCookie:cookie];
 //    }
 
     //(2)请求头的设置
@@ -264,23 +258,28 @@
 }
 
 #pragma mark - 上传文件
-+ (void)uploadNetWithUrl:(NSString *)url fileSource:(id)fileSource success:(blockOfSuccess)success failure:(blockOfFailure)failure
++ (void)uploadNetWithUrl:(NSString *)url body:(id)body fileSource:(id)fileSource success:(blockOfSuccess)success failure:(blockOfFailure)failure
 {
     // 获取管理者
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-
+    //(2)请求头的设置
     for (NSString *key in [self setupHeader].allKeys) {
         [manager.requestSerializer setValue:[self setupHeader][key] forHTTPHeaderField:key];
     }
+    if (JPTOKEN != nil) {
+        [manager.requestSerializer setValue:JPTOKEN forHTTPHeaderField:@"Cookie"];
+    }
     //(3)设置返回数据的类型
     manager.responseSerializer = [AFJSONResponseSerializer serializer];
+
+
         
     //IOS9--UTF-8转码
     url = [url stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-    [manager POST:url parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+    [manager POST:url parameters:body constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
         if ([fileSource isKindOfClass:[UIImage class]]) {
             NSData *imageData = [UIImagePNGRepresentation(fileSource) length] > 102400 ?UIImageJPEGRepresentation(fileSource, 0.7) : UIImagePNGRepresentation(fileSource);
-            [formData appendPartWithFileData:imageData name:@"imageFile" fileName:@"imageFile.png" mimeType:@"image/png"];
+            [formData appendPartWithFileData:imageData name:@"file" fileName:@"imageFile.png" mimeType:@"image/png"];
         }
     } progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSDictionary *result = responseObject;

@@ -10,8 +10,8 @@
 #define PrefixHeader_pch
 
 //客工URL
-//#define KGSERVER_URL @"http://192.168.1.84:8081/qualityshop-api/" // 测试
-#define KGSERVER_URL @"http://ele.test.out.eascs.com" // 生产
+//#define KGSERVER_URL @"api.test.out.eascs.com" // 测试
+#define KGSERVER_URL @"http://api.eletest.eascs.com" // 生产
 
 #ifdef DEBUG
 

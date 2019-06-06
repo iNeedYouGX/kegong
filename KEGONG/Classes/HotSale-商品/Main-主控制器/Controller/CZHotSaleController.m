@@ -27,7 +27,6 @@
 @end
 
 @implementation CZHotSaleController
-
 #pragma mark - 数据
 // 获取url
 - (void)getImageUrl
@@ -67,7 +66,7 @@
 #pragma mark - 视图
 - (void)setupTopSearchView
 {
-    self.search = [[CZHotSearchView alloc] initWithFrame:CGRectMake(10, IsiPhoneX ? 54 : 30, SCR_WIDTH, 34) msgAction:^(NSString *title){}];
+    self.search = [[CZHotSearchView alloc] initWithFrame:CGRectMake(10, IsiPhoneX ? 54 : 30, SCR_WIDTH - 20, 34) msgAction:^(NSString *title){}];
     self.search.textFieldActive = NO;
     [self.view addSubview:self.search];
 //    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(pushSearchController)];

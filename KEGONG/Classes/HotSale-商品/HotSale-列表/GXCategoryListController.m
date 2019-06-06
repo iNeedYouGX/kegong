@@ -28,7 +28,6 @@
 @end
 
 @implementation GXCategoryListController
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = CZGlobalLightGray;

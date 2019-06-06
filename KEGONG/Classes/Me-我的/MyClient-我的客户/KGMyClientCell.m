@@ -21,14 +21,23 @@
 @end
 
 @implementation KGMyClientCell
-+ (instancetype)cellWithTableView:(UITableView *)tableView
++ (instancetype)cellWithTableView:(UITableView *)tableView type:(KGMyClientCellType)type
 {
-    static NSString *cellId = @"KGMyClientCell";
-    KGMyClientCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId];
-    if (cell == nil) {
-        cell = [[[NSBundle mainBundle] loadNibNamed:NSStringFromClass(self) owner:nil options:nil] firstObject];
+    if (type == KGMyClientCellTypeDefault) {
+        static NSString *cellId = @"KGMyClientCell";
+        KGMyClientCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId];
+        if (cell == nil) {
+            cell = [[[NSBundle mainBundle] loadNibNamed:NSStringFromClass(self) owner:nil options:nil] firstObject];
+        }
+        return cell;
+    } else {
+        static NSString *cellId = @"KGMyClientCell1";
+        KGMyClientCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId];
+        if (cell == nil) {
+            cell = [[[NSBundle mainBundle] loadNibNamed:NSStringFromClass(self) owner:nil options:nil] lastObject];
+        }
+        return cell;
     }
-    return cell;
 }
 
 - (void)setModel:(NSDictionary *)model
@@ -38,7 +47,7 @@
     self.btn;
     /** 头像 */
 //    [self.headerImage sd_setImageWithURL:[NSURL URLWithString:[KGIMAGEURL stringByAppendingPathComponent:model[@"thumbnail"]]]];
-    [self.headerImage sd_setImageWithURL:[NSURL URLWithString:model[@"userheadpath"]]];
+    [self.headerImage sd_setImageWithURL:[NSURL URLWithString:model[@"userheadpath"]] placeholderImage:[UIImage imageNamed:@"head portrait-1"]];
     /** 名字 */
     self.nameLabel.text = model[@"username"];
     /** 电话 */
